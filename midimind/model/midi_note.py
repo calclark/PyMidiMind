@@ -1,6 +1,22 @@
 import mido.messages.messages as msgs
 import mido
 
+from typing import List
+
+
+def get_midi_notes(msgs_list: List):
+    cache = {}
+    notes = []
+    for msg in msgs_list:
+        if msg.is_meta or msg.type != 'note_on':
+            continue
+        if str(msg.note) in cache.keys():
+            notes.append(MidiNote(cache[str(msg.note)], msg))
+            del cache[str(msg.note)]
+        else:
+            cache[str(msg.note)] = msg
+    return notes
+
 
 class MidiNote:
 

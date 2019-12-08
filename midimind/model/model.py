@@ -1,28 +1,25 @@
-#!/usr/bin/env python3
-
 import random
 from typing import List, Dict
-from .midi_note import MidiNote
+
+
+def gen_motif_dict(symbols: List):
+    motifs = {}
+    motif_buffer = []
+    for symbol in symbols:
+        motif_buffer.append(symbol)
+        curr_motif = tuple(motif_buffer)
+        if curr_motif in motifs:
+            motifs[curr_motif] += 1
+        else:
+            motifs[curr_motif] = 1
+            motif_buffer.clear()
+    return motifs
 
 
 class MidiModel:
 
     def __init__(self):
         self.continuation_dict = {}
-
-    @staticmethod
-    def gen_motif_dict(symbols: List):
-        motifs = {}
-        motif_buffer = []
-        for symbol in symbols:
-            motif_buffer.append(symbol)
-            curr_motif = tuple(motif_buffer)
-            if curr_motif in motifs:
-                motifs[curr_motif] += 1
-            else:
-                motifs[curr_motif] = 1
-                motif_buffer.clear()
-        return motifs
 
     def train(self, motif_dict: Dict):
         for motif, count in motif_dict.items():
@@ -45,17 +42,3 @@ class MidiModel:
         for symbol in self.continuation_dict[subtext]:
             symbol_list += [symbol[0]] * symbol[1]
         return random.choice(symbol_list)
-
-    @staticmethod
-    def get_midi_notes(msgs_list: List):
-        cache = {}
-        notes = []
-        for msg in msgs_list:
-            if msg.is_meta or msg.type != 'note_on':
-                continue
-            if str(msg.note) in cache.keys():
-                notes.append(MidiNote(cache[str(msg.note)], msg))
-                del cache[str(msg.note)]
-            else:
-                cache[str(msg.note)] = msg
-        return notes

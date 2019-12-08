@@ -1,10 +1,7 @@
-#!/usr/bin/env python3
-
 import sys
-
 import mido
 
-from .parser import MidiModel
+from .model import MidiModel, gen_motif_dict, get_midi_notes
 
 if len(sys.argv) != 3:
     print("USAGE: midimind TRAINING_FILE OUTPUT_FILE")
@@ -16,8 +13,8 @@ for msg in in_file:
 
 main_midi = MidiModel()
 
-symbols = MidiModel.get_midi_notes(messages)
-motifs = MidiModel.gen_motif_dict(symbols)
+symbols = get_midi_notes(messages)
+motifs = gen_motif_dict(symbols)
 main_midi.train(motifs)
 
 output = mido.MidiFile()
