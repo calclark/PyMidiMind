@@ -20,9 +20,13 @@ class MidiNote:
     def note(self):
         return self.on_msg.note
 
-    @property
-    def duration(self):
-        return self.off_msg.time / (self.on_msg.time + self.off_msg.time)
+    def __eq__(self, other):
+        if not isinstance(other, MidiNote):
+            return NotImplemented
+        return self.velocity == other.velocity and self.note == other.note and self.channel == other.channel
+
+    def __hash__(self):
+        return hash((self.velocity, self.channel, self.note))
 
     def as_msgs(self):
         start = mido.Message('note_on', note=self.note,
@@ -34,5 +38,5 @@ class MidiNote:
         return (start, end)
 
     def __str__(self):
-        return 'Note: {} Channel: {} Velocity: {} Duration: {}'.format(
-            self.note, self.channel, self.velocity, self.duration)
+        return 'Note: {} Channel: {} Velocity: {}'.format(
+            self.note, self.channel, self.velocity)
