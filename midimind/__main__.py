@@ -21,12 +21,12 @@ output = mido.MidiFile()
 track = mido.MidiTrack()
 output.tracks.append(track)
 
-context = symbols
 
+main_midi.text = symbols[0: len(symbols) % 10]
 for i in range(200):
-    context.append(main_midi.respond(context))
+    main_midi.respond()
 
-for note in context:
+for note in main_midi.text:
     start, end = note.as_msgs()
     track.append(start)
     track.append(end)

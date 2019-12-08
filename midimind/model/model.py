@@ -1,5 +1,6 @@
 import random
 from typing import List, Dict
+from collections import deque
 
 
 def gen_motif_dict(symbols: List):
@@ -20,6 +21,17 @@ class MidiModel:
 
     def __init__(self):
         self.continuation_dict = {}
+        self._text = []
+        self.context = deque()
+
+    @property
+    def text(self):
+        return self._text
+
+    @text.setter
+    def text(self, new_text=[]):
+        self._text = new_text
+        self.context = deque(new_text)
 
     def train(self, motif_dict: Dict):
         for motif, count in motif_dict.items():
@@ -30,15 +42,17 @@ class MidiModel:
             else:
                 self.continuation_dict[context] = [(note, count)]
 
-    def respond(self, context: List):
-        subtext = ()
-        for i in range(len(context)):
-            temptext = tuple(context[i:len(context)])
-            if temptext in self.continuation_dict:
-                subtext = temptext
-                break
+    def respond(self):
+        if () not in self.continuation_dict:
+            return
+
+        while tuple(self.context) not in self.continuation_dict:
+            self.context.popleft()
 
         symbol_list = []
-        for symbol in self.continuation_dict[subtext]:
+        for symbol in self.continuation_dict[tuple(self.context)]:
             symbol_list += [symbol[0]] * symbol[1]
-        return random.choice(symbol_list)
+
+        symbol = random.choice(symbol_list)
+        self._text.append(symbol)
+        self.context.append(symbol)
