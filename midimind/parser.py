@@ -5,6 +5,7 @@ from typing import List, Dict
 
 
 class MidiModel:
+
     def __init__(self):
         self.continuation_dict = {}
 
