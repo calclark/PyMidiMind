@@ -1,27 +1,29 @@
 #!/usr/bin/env python3
 
+from typing import List, Dict
 
-notes = ["D", "C", "B", "C", "D", "D", "D", "C", "C", "C", "D", "F", "F", "D",
-         "C", "B", "C", "D", "D", "D", "D", "C", "C", "D", "C", "B"]
 
-motifs = {}
-currMot = ""
-for note in notes:
-    currMot += note
-    if currMot in motifs:
-        motifs[currMot] += 1
-    else:
-        motifs[currMot] = 1
-        currMot = ""
+class MidiModel:
+    def __init__(self):
+        self.continuation_dict = {}
 
-probs = {}
-for motif, count in motifs.items():
-    context = motif[:-1]
-    note = motif[-1]
-    if context in probs:
-        probs[context].append((note, count))
-    else:
-        probs[context] = [(note, count)]
+    def gen_motif_dict(self, symbols: List):
+        motifs = {}
+        curr_motif = []
+        for symbol in symbols:
+            curr_motif.append(symbol)
+            if curr_motif in motifs:
+                motifs[curr_motif] += 1
+            else:
+                motifs[curr_motif] = 1
+                curr_motif.clear()
+        return motifs
 
-for context, nexts in probs.items():
-    print(context, nexts)
+    def train(self, motif_dict: Dict):
+        for motif, count in motif_dict.items():
+            context = motif[:-1]
+            note = motif[-1]
+            if context in self.continuation_dict:
+                self.continuation_dict[context].append((note, count))
+            else:
+                self.continuation_dict[context] = [(note, count)]
