@@ -2,7 +2,7 @@
 
 import random
 from typing import List, Dict
-from midi_note import MidiNote
+from .midi_note import MidiNote
 
 
 class MidiModel:
@@ -59,6 +59,3 @@ class MidiModel:
             else:
                 cache[str(msg.note)] = msg
         return notes
-        
-
-            
