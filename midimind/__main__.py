@@ -4,7 +4,6 @@ import sys
 
 import mido
 
-from .midi_note import MidiNote
 from .parser import MidiModel
 
 if len(sys.argv) != 3:
@@ -25,14 +24,14 @@ output = mido.MidiFile()
 track = mido.MidiTrack()
 output.tracks.append(track)
 
-context = symbols[0:]
+context = symbols
 
 for i in range(200):
     context.append(main_midi.respond(context))
 
 for note in context:
-    break
-    # TODO: convert MidiNote to messages and append
-    # to track
+    start, end = note.as_msgs()
+    track.append(start)
+    track.append(end)
 
 output.save(sys.argv[2])

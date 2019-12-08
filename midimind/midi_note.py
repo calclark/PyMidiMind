@@ -1,4 +1,5 @@
 import mido.messages.messages as msgs
+import mido
 
 
 class MidiNote:
@@ -22,6 +23,15 @@ class MidiNote:
     @property
     def duration(self):
         return self.off_msg.time / (self.on_msg.time + self.off_msg.time)
+
+    def as_msgs(self):
+        start = mido.Message('note_on', note=self.note,
+                             channel=self.channel, velocity=self.velocity,
+                             time=0)
+        end = mido.Message('note_off', note=self.note,
+                           channel=self.channel, velocity=self.velocity,
+                           time=480)
+        return (start, end)
 
     def __str__(self):
         return 'Note: {} Channel: {} Velocity: {} Duration: {}'.format(
