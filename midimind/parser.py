@@ -2,6 +2,7 @@
 
 import random
 from typing import List, Dict
+from midi_note import MidiNote
 
 
 class MidiModel:
@@ -44,3 +45,20 @@ class MidiModel:
         for symbol in self.continuation_dict[subtext]:
             symbol_list += [symbol[0]] * symbol[1]
         return random.choice(symbol_list)
+
+    @staticmethod
+    def get_midi_notes(msgs_list: List):
+        cache = {}
+        notes = []
+        for msg in msgs_list:
+            if msg.is_meta or msg.type != 'note_on':
+                continue
+            if str(msg.note) in cache.keys():
+                notes.append(MidiNote(cache[str(msg.note)], msg))
+                del cache[str(msg.note)]
+            else:
+                cache[str(msg.note)] = msg
+        return notes
+        
+
+            
