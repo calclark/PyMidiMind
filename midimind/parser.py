@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import random
 from typing import List, Dict
 
 
@@ -7,7 +8,8 @@ class MidiModel:
     def __init__(self):
         self.continuation_dict = {}
 
-    def gen_motif_dict(self, symbols: List):
+    @staticmethod
+    def gen_motif_dict(symbols: List):
         motifs = {}
         motif_buffer = []
         for symbol in symbols:
@@ -28,3 +30,16 @@ class MidiModel:
                 self.continuation_dict[context].append((note, count))
             else:
                 self.continuation_dict[context] = [(note, count)]
+
+    def respond(self, context: List):
+        subtext = ()
+        for i in range(len(context)):
+            temptext = tuple(context[i:len(context)])
+            if temptext in self.continuation_dict:
+                subtext = temptext
+                break
+
+        symbol_list = []
+        for symbol in self.continuation_dict[subtext]:
+            symbol_list += [symbol[0]] * symbol[1]
+        return random.choice(symbol_list)
