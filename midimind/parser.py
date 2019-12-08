@@ -9,14 +9,15 @@ class MidiModel:
 
     def gen_motif_dict(self, symbols: List):
         motifs = {}
-        curr_motif = []
+        motif_buffer = []
         for symbol in symbols:
-            curr_motif.append(symbol)
+            motif_buffer.append(symbol)
+            curr_motif = tuple(motif_buffer)
             if curr_motif in motifs:
                 motifs[curr_motif] += 1
             else:
                 motifs[curr_motif] = 1
-                curr_motif.clear()
+                motif_buffer.clear()
         return motifs
 
     def train(self, motif_dict: Dict):
