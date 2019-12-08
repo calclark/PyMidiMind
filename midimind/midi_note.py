@@ -1,12 +1,14 @@
 import mido.messages.messages as msgs
-import mido
+from fractions import Fraction
 
 
 class MidiNote:
 
-    def __init__(self, on_msg: msgs.Message, off_msg: msgs.Message):
+    def __init__(self, on_msg: msgs.Message, off_msg: msgs.Message,
+                 duration: Fraction):
         self.on_msg = on_msg
         self.off_msg = off_msg
+        self._duration = duration
 
     @property
     def velocity(self):
@@ -20,23 +22,20 @@ class MidiNote:
     def note(self):
         return self.on_msg.note
 
-    def __eq__(self, other):
-        if not isinstance(other, MidiNote):
-            return NotImplemented
-        return self.velocity == other.velocity and self.note == other.note and self.channel == other.channel
-
-    def __hash__(self):
-        return hash((self.velocity, self.channel, self.note))
-
-    def as_msgs(self):
-        start = mido.Message('note_on', note=self.note,
-                             channel=self.channel, velocity=self.velocity,
-                             time=0)
-        end = mido.Message('note_off', note=self.note,
-                           channel=self.channel, velocity=self.velocity,
-                           time=480)
-        return (start, end)
+    @property
+    def duration(self):
+        return self._duration
 
     def __str__(self):
-        return 'Note: {} Channel: {} Velocity: {}'.format(
-            self.note, self.channel, self.velocity)
+        return 'Note: {} Channel: {} Velocity: {} Duration: {}/{}'.format(
+            self.note, self.channel, self.velocity, self.duration.numerator,
+            self.duration.denominator)
+
+    def __hash__(self):
+        return (hash(self.velocity) + hash(self.channel) + hash(self.note) +
+                hash(int(self.duration)))
+
+    def __eq__(self, obj):
+        return (isinstance(obj, MidiNote) and self.velocity == obj.velocity
+                and self.channel == obj.velocity and self.note == obj.note
+                and self.duration == obj.duration)

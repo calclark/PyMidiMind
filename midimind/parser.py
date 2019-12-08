@@ -2,13 +2,20 @@
 
 import random
 from typing import List, Dict
-from .midi_note import MidiNote
+from midi_note import MidiNote
+from fractions import Fraction
+import mido.frozen
 
 
 class MidiModel:
 
     def __init__(self):
         self.continuation_dict = {}
+
+    class MsgMap:
+        def __init__(self, msg):
+            self.msg = msg
+            self.time_acc = 0
 
     @staticmethod
     def gen_motif_dict(symbols: List):
@@ -46,16 +53,31 @@ class MidiModel:
             symbol_list += [symbol[0]] * symbol[1]
         return random.choice(symbol_list)
 
-    @staticmethod
-    def get_midi_notes(msgs_list: List):
+    @classmethod
+    def get_midi_notes(cls, msgs: List, ticks_per_beat: int):
         cache = {}
         notes = []
+        msgs_list = map(lambda x: mido.frozen.freeze_message(x), msgs)
         for msg in msgs_list:
             if msg.is_meta or msg.type != 'note_on':
                 continue
-            if str(msg.note) in cache.keys():
-                notes.append(MidiNote(cache[str(msg.note)], msg))
-                del cache[str(msg.note)]
+
+            MidiModel._add_time_to_cache_members(cache, msg.time)
+
+            print([str(x) for x in cache])
+
+            if msg in cache.keys():
+                notes.append(MidiNote(
+                    mido.frozen.thaw_message(cache[msg].msg),
+                    mido.frozen.thaw_message(msg),
+                    Fraction(cache[msg].time_acc, ticks_per_beat)))
+                del cache[msg]
             else:
-                cache[str(msg.note)] = msg
+                cache[msg] = cls.MsgMap(msg)
+
         return notes
+
+    @staticmethod
+    def _add_time_to_cache_members(cache, time):
+        for val in cache.values():
+            val.time_acc += time
