@@ -13,7 +13,7 @@ for msg in in_file:
 
 main_midi = MidiModel()
 
-symbols = get_midi_notes(messages)
+symbols = get_midi_notes(messages, in_file.ticks_per_beat)
 motifs = gen_motif_dict(symbols)
 main_midi.train(motifs)
 
@@ -22,7 +22,7 @@ track = mido.MidiTrack()
 output.tracks.append(track)
 
 
-main_midi.text = symbols[0: len(symbols) % 10]
+main_midi.text = []
 for i in range(200):
     main_midi.respond()
 
