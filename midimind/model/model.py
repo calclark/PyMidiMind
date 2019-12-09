@@ -29,7 +29,7 @@ class MidiModel:
         return self._text
 
     @text.setter
-    def text(self, new_text=[]):
+    def text(self, new_text):
         self._text = new_text
         self.context = deque(new_text)
 

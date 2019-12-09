@@ -6,7 +6,7 @@ def get_midi_notes(msg_list: List, ticks_per_beat):
     cache = {}
     notes = []
     for msg in msg_list:
-        if msg.is_meta or msg.type != 'note_on':
+        if msg.is_meta or (msg.type != 'note_on' and msg.type != 'note_off'):
             continue
 
         for m in cache.keys():
@@ -49,7 +49,7 @@ class MidiNote:
                              channel=self.channel, velocity=self.velocity,
                              time=0)
         end = mido.Message('note_off', note=self.note,
-                           channel=self.channel, velocity=self.velocity,
+                           channel=self.channel, velocity=0,
                            time=self.duration)
         return (start, end)
 
