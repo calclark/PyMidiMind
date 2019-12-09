@@ -8,26 +8,19 @@ def get_midi_notes(msg_list: List):
     for msg in msg_list:
         if msg.is_meta or (msg.type != 'note_on' and msg.type != 'note_off'):
             continue
-        counter = msg.time
+
+        if len(cache) > 1:
+            chord = [(MidiNote(cache[0][0], cache[0][1], msg.time))]
+            for tone in cache[1:]:
+                chord.append(MidiNote(tone[0], tone[1], msg.time))
+            notes.append(MidiChord(tuple(chord)))
 
         curr_tone = (msg.note, msg.channel)
         if curr_tone in cache:
-            chord = []
-            for tone in cache:
-                chord.append(MidiNote(tone[0], tone[1], counter))
-            notes.append(MidiChord(tuple(chord)))
             cache.remove(curr_tone)
         else:
-            chord = []
-            for tone in cache:
-                chord.append(MidiNote(tone[0], tone[1], counter))
-            if chord:
-                notes.append(MidiChord(tuple(chord)))
-            counter = 0
             cache.append(curr_tone)
 
-    for note in notes:
-        print(note)
     return notes
 
 

@@ -38,7 +38,16 @@ class MidiModel:
             context = motif[:-1]
             note = motif[-1]
             if context in self.continuation_dict:
-                self.continuation_dict[context].append((note, count))
+                updated = False
+                for n, c in self.continuation_dict[context]:
+                    if n == note:
+                        self.continuation_dict[context].remove((n, c))
+                        self.continuation_dict[context].append(
+                            (note, c + count))
+                        updated = True
+                        break
+                if not updated:
+                    self.continuation_dict[context].append((note, count))
             else:
                 self.continuation_dict[context] = [(note, count)]
 

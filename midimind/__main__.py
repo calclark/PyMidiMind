@@ -16,7 +16,8 @@ for track in in_file.tracks:
 
     symbols = get_midi_notes(track)
     motifs = gen_motif_dict(symbols)
-    curr_model.train(motifs)
+    for i in range(25):
+        curr_model.train(motifs)
 
     curr_model.text = []
     for i in range(100):
