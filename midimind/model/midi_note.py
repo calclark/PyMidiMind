@@ -1,4 +1,3 @@
-from functools import reduce
 from typing import List
 import mido
 
@@ -11,31 +10,26 @@ def get_midi_notes(msg_list: List):
             continue
 
         for m in cache.keys():
-            cache[m][1] += msg.time
+            cache[m] += msg.time
 
         key = (msg.note, msg.channel)
         if key in cache.keys():
-            ticks = cache[key][1]
-            notes.append(MidiNote(msg.note, cache[key][0],
-                                  msg.channel, ticks))
+            ticks = cache[key]
+            notes.append(MidiNote(msg.note, msg.channel, ticks))
             del cache[key]
         else:
-            cache[key] = [msg.velocity, 0]
+            cache[key] = 0
 
     return notes
 
 
 class MidiNote:
 
-    def __init__(self, note, velocity, channel, duration):
+    def __init__(self, note, channel, duration, velocity=64):
         self.note = note
         self.velocity = velocity
         self.channel = channel
         self.duration = duration
-
-    @property
-    def silent(self):
-        return self.velocity == 0
 
     def __eq__(self, other):
         if not isinstance(other, MidiNote):
