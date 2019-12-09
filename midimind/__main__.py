@@ -11,6 +11,7 @@ messages = []
 for msg in in_file:
     messages.append(msg)
 
+
 main_midi = MidiModel()
 
 symbols = get_midi_notes(messages, in_file.ticks_per_beat)
@@ -21,9 +22,10 @@ output = mido.MidiFile()
 track = mido.MidiTrack()
 output.tracks.append(track)
 
+track.append(mido.MetaMessage("set_tempo", tempo=mido.bpm2tempo(120)))
 
 main_midi.text = []
-for i in range(200):
+for i in range(100):
     main_midi.respond()
 
 for note in main_midi.text:
